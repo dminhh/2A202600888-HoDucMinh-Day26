@@ -179,3 +179,130 @@ Optional bonus:
 - add authentication for SSE or HTTP transport
 - support both SQLite and PostgreSQL with the same MCP surface
 - add richer output annotations or pagination
+
+---
+
+## Setup
+
+### Prerequisites
+
+```bash
+pip install fastmcp
+```
+
+### Initialize the database
+
+```bash
+python3 implementation/init_db.py
+```
+
+The database is also auto-created when `mcp_server.py` starts for the first time.
+
+### Run the MCP server (stdio — for clients)
+
+```bash
+python3 implementation/mcp_server.py
+```
+
+### Launch MCP Inspector (browser UI)
+
+```bash
+./implementation/start_inspector.sh
+```
+
+Open the printed URL, then:
+1. **Tools tab** — verify `search`, `insert`, `aggregate` appear with schemas
+2. **Resources tab** — verify `schema://database` appears
+3. Call a tool and check the response
+4. Call with an invalid table to see the error response
+
+### Run automated tests
+
+```bash
+python3 -m pytest implementation/tests/ -v
+```
+
+### Run smoke-test script
+
+```bash
+python3 implementation/verify_server.py
+```
+
+---
+
+## Claude Code Client Setup
+
+`.mcp.json` is already configured in this repo. Edit the absolute path if needed, then restart Claude Code.
+
+Verify the connection:
+
+```
+@sqlite-lab:schema://database
+```
+
+---
+
+## Example Tool Calls
+
+**Search all students in cohort A1, ordered by score:**
+```json
+{
+  "table": "students",
+  "filters": [{"column": "cohort", "operator": "=", "value": "A1"}],
+  "order_by": "score",
+  "descending": true
+}
+```
+
+**Insert a new student:**
+```json
+{
+  "table": "students",
+  "values": {"name": "New Student", "cohort": "B2", "score": 88.0, "email": "new@example.com"}
+}
+```
+
+**Average score by cohort:**
+```json
+{
+  "table": "students",
+  "metric": "avg",
+  "column": "score",
+  "group_by": "cohort"
+}
+```
+
+**Count enrollments for a specific course:**
+```json
+{
+  "table": "enrollments",
+  "metric": "count",
+  "filters": [{"column": "course_id", "operator": "=", "value": 1}]
+}
+```
+
+**Invalid call — unknown table (demonstrates error handling):**
+```json
+{
+  "table": "nonexistent",
+  "filters": []
+}
+```
+
+---
+
+## Project Structure
+
+```
+implementation/
+  db.py              # SQLiteAdapter — all DB logic and validation
+  init_db.py         # Schema DDL + seed data
+  mcp_server.py      # FastMCP server: tools + resources
+  verify_server.py   # Human-readable smoke test (no pytest)
+  start_inspector.sh # Launches MCP Inspector in browser
+  lab.db             # SQLite database (auto-created)
+  tests/
+    test_db.py       # Unit tests for SQLiteAdapter (28 tests)
+    test_tools.py    # Integration tests for tool functions (16 tests)
+.mcp.json            # Claude Code MCP client config
+```
