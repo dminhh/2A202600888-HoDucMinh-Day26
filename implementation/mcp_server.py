@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from typing import Optional, List
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -19,11 +20,11 @@ mcp = FastMCP("SQLite Lab MCP Server")
 @mcp.tool(name="search")
 def search(
     table: str,
-    filters: list = None,
-    columns: list = None,
+    filters: Optional[List[dict]] = None,
+    columns: Optional[List[str]] = None,
     limit: int = 20,
     offset: int = 0,
-    order_by: str = None,
+    order_by: Optional[str] = None,
     descending: bool = False,
 ) -> dict:
     """Search rows in a database table.
@@ -77,9 +78,9 @@ def insert(table: str, values: dict) -> dict:
 def aggregate(
     table: str,
     metric: str,
-    column: str = None,
-    filters: list = None,
-    group_by: str = None,
+    column: Optional[str] = None,
+    filters: Optional[List[dict]] = None,
+    group_by: Optional[str] = None,
 ) -> dict:
     """Compute aggregate metrics on a database table.
 
