@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Database (auto-created on first run)
+implementation/lab.db
+
+# npm / Inspector cache
+.npm-cache/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+
+# pytest
+.pytest_cache/
+
+# Claude Code internals
+.claude/
+
+# DeepEval
+.deepeval/
+
+# Plan docs (internal tooling, not needed for submission)
+docs/
+
+# Claude Code project memory
+CLAUDE.md
